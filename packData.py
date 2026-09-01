@@ -12,7 +12,7 @@ def parseFrame(buffer):	# packs start + 16 bytes into eight 16 bit data in array
 # MAIN:
 
 PORT = "/dev/ttyUSB0"
-BAUD = 250000
+BAUD = 896000
 uartData = serial.Serial(PORT, BAUD, timeout=0.5)
 
 
