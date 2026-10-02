@@ -1,8 +1,12 @@
 import serial
 
 PORT = "/dev/ttyUSB0"
-BAUD = 896000
+BAUD = 921600
 uartData = serial.Serial(PORT, BAUD, timeout=0.5)
+
+
+logFile = open("log.csv", "w")
+logFile.write("ch1,ch2,ch3,ch4,ch5,ch6,ch7,ch8\n")
 
 
 try:
@@ -25,10 +29,26 @@ try:
 
 		
 		line = ""
-		for byte in payload:
-			line = line + format(byte, "02X") + " "
+		for i in range(8):
+			highByte = payload[i*2]
+			lowByte = payload[i*2 + 1]
+			value = (highByte << 8) + lowByte
+
+			savedValue = value
+
+			line = line + format(value, "012b")
+
+			if i < 7:
+				line = line + ","
+
+		if savedValue > 0x0300:
+			line = line + "," + "detected"
+		else:
+			line = line + "," + "N/A"
 		
 		print(line)
+		logFile.write(line + "\n")
+		
 
 
 
