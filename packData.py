@@ -1,4 +1,5 @@
 import serial
+import time
 
 PORT = "/dev/ttyUSB0"
 BAUD = 921600
@@ -11,6 +12,9 @@ logFile.write("ch1,ch2,ch3,ch4,ch5,ch6,ch7,ch8\n")
 
 READY = 0
 STATE = ""
+
+nowTime =0
+prevTime = 0
 
 try:
 	while (1):
@@ -45,13 +49,16 @@ try:
 				line = line + ","
 
 
-		if (savedValue > 0x0700 and READY):
+		nowTime = time.monotonic()
+
+		if (savedValue > 0x0700 and READY and (nowTime - prevTime) > 0.5): # debounce 0.5s
 			if STATE == "CLOSE":
 				STATE = "OPEN"
 			else:
 				STATE = "CLOSE"
 
 			READY = 0 
+			prevTime = nowTime
 
 		elif savedValue < 0x00F0:
 			READY = 1
