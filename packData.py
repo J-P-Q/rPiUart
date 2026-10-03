@@ -9,6 +9,9 @@ logFile = open("log.csv", "w")
 logFile.write("ch1,ch2,ch3,ch4,ch5,ch6,ch7,ch8\n")
 
 
+READY = 0
+STATE = ""
+
 try:
 	while (1):
 		data = uartData.read(1)
@@ -41,10 +44,20 @@ try:
 			if i < 7:
 				line = line + ","
 
-		if savedValue > 0x0300:
-			line = line + "," + "detected"
-		else:
-			line = line + "," + "N/A"
+
+		if (savedValue > 0x0700 and READY):
+			if STATE == "CLOSE":
+				STATE = "OPEN"
+			else:
+				STATE = "CLOSE"
+
+			READY = 0 
+
+		elif savedValue < 0x00F0:
+			READY = 1
+
+		line = line + "," + STATE
+		
 		
 		print(line)
 		logFile.write(line + "\n")
